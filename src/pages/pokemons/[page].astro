@@ -1,0 +1,68 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '@layouts/Layout.astro';
+import PokemonCard from '@components/pokemons/PokemonCard.astro';
+
+import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
+
+export const getStaticPaths = (async ({ paginate }) => {
+    const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+    const { results } = (await resp.json()) as PokemonListResponse;
+
+    return paginate(results, { pageSize: 20 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+console.log(page);
+---
+
+<Layout title="Pokemon Static | Home">
+    <h1 class="text-3xl">Listado de Pokemons</h1>
+    <hr />
+    <section
+        aria-label="Listado de Pokemons"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 py-4"
+    >
+        {page.data.map((pokemon) => <PokemonCard pokemonData={pokemon} />)}
+    </section>
+    <section class="flex mt-10 gap-2 items-center">
+        <!-- {
+            page.url.prev && (
+                <a class="btn" href={page.url.prev}>
+                    Previous
+                </a>
+            )
+        } -->
+        <a
+            class:list={[
+                'btn', // Clase que tendra si o si
+                {
+                    disabled: !page.url.prev, // Clase condicional que tendra si no tiene prev
+                },
+            ]}
+            href={page.url.prev}
+        >
+            Previous
+        </a>
+        <a
+            class:list={[
+                'btn', // Clase que tendra si o si
+                {
+                    disabled: !page.url.next, // Clase condicional que tendra si no tiene next
+                },
+            ]}
+            href={page.url.next}>Next</a
+        >
+        <div class="flex flex-1"></div>
+        <span class="text-xl font-bold">Página {page.currentPage}</span>
+    </section>
+</Layout>
+<style>
+    @reference "tailwindcss";
+    .btn {
+        @apply bg-blue-500 p-2 text-white rounded-md hover:bg-blue-700 transition-colors;
+    }
+    .disabled {
+        @apply bg-gray-500 cursor-not-allowed;
+    }
+</style>

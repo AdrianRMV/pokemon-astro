@@ -1,22 +1,47 @@
+---
+import { siteInfo } from 'src/consts/site-info';
+import '../styles/global.css';
+import NavBar from '@components/shared/NavBar.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+    title: string;
+    image?: string;
+    description?: string;
+}
+
+const {
+    title = siteInfo.title,
+    image = siteInfo.image,
+    description = siteInfo.description,
+} = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+        <!-- SEO -->
+        <meta name="description" content={description} />
+        <meta name="author" content={'Adrian Ramirez'} />
+
+        <!-- OG meta tags -->
+        <meta property="og:description" content={description} />
+        <meta property="og:title" content={title} />
+        <meta property="og:image" content={image} />
+
+        <!-- Client Router -->
+        <ClientRouter />
+    </head>
+    <body class="bg-slate-800 text-slate-100 max-w-3xl m-auto !important">
+        <NavBar />
+        <main class="mt-5 m-auto max-w-3xl">
+            <slot />
+        </main>
+    </body>
+</html>
